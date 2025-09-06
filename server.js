@@ -12,7 +12,7 @@ const multer = require('multer');
 const cors = require('cors');
 
 const app = express();
-const DB_FILE = path.join(__dirname, 'veltrix.db');
+const DB_FILE = path.join(__dirname, '../veltrix.db');
 const PUBLIC_DIR = path.join(__dirname, 'public');
 
 // ---------- MIDDLEWARE ----------
