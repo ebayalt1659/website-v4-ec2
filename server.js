@@ -126,7 +126,7 @@ const transporter = nodemailer.createTransport({
 
 async function sendVerificationEmail(email, username, token) {
   // IMPORTANT: Replace 'http://localhost:4000' with your actual domain in production
-  const verificationLink = `http://localhost:4000/api/verify-email?token=${token}`;
+  const verificationLink = `https://veltrix.asia/api/verify-email?token=${token}`;
 
   const mailOptions = {
     from: '"Veltrix Support" <noreply@veltrix.asia>',
