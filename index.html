@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Veltrix — Premium Accounts</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root{
+      --bg:#0e1720; --panel:#111b26; --muted:#152233;
+      --text:#e6f1ff; --sub:#97a7bd; --acc:#ff4655; --acc2:#ff7a00; --ok:#16a34a;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--text)}
+    a{color:var(--acc);text-decoration:none}
+    header{position:sticky;top:0;z-index:40;background:linear-gradient(90deg,#0f1923,#182433);border-bottom:1px solid rgba(255,255,255,.06)}
+    .nav{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:10px 14px}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:700}
+    .brand img{height:40px}
+    .navlinks{display:flex;gap:16px;align-items:center}
+    .navlinks a{color:var(--text);opacity:.92}
+    .navlinks a:hover{color:var(--acc)}
+    .avatar-mini{width:32px;height:32px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.15)}
+    main{max-width:1100px;margin:0 auto;padding:24px 14px}
+    .section-title{font-size:26px;font-weight:700;margin:8px 0 14px;display:flex;align-items:center;gap:10px}
+    .grid{display:grid;gap:14px}
+    .grid-3{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+    .card{background:linear-gradient(180deg,var(--panel),var(--muted));border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:16px;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+    .price{color:var(--acc);font-weight:700}
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;background:#1a2634;border:1px solid rgba(255,255,255,.08);color:#fff;cursor:pointer}
+    .btn:hover{transform:translateY(-1px)}
+    .btn.primary{background:linear-gradient(45deg,var(--acc),var(--acc2));border:none}
+    .btn.ok{background:linear-gradient(45deg,#16a34a,#22c55e);border:none}
+    input,select,textarea{width:100%;background:#0f1720;border:1px solid rgba(255,255,255,.09);color:#e6f1ff;padding:10px 12px;border-radius:10px;outline:none}
+    .muted{color:var(--sub)}
+    .avatar{width:64px;height:64px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.12)}
+    .hidden{display:none!important}
+    footer{padding:40px 14px;border-top:1px solid rgba(255,255,255,.06);background:#0d1420}
+    .footer-grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));max-width:1100px;margin:0 auto}
+    .copyright{text-align:center;margin-top:10px;color:#7f8da3;font-size:13px}
+    .pill{display:inline-block;padding:4px 8px;border-radius:999px;background:#122032;color:#9fb2c8;font-size:12px}
+    .notice{background:#0f1d2c;border:1px dashed rgba(255,255,255,.15);padding:12px;border-radius:10px}
+    .orders-cred{white-space:pre-wrap;background:#0c1420;border:1px solid rgba(255,255,255,.06);padding:10px;border-radius:10px}
+  .payment-box {
+  background: #222f3e;
+  border: 2px solid #00aaff;
+  border-radius: 12px;
+  padding: 12px;
+  margin: 8px 0;
+  color: #fff;
+  font-size: 0.95rem;
+}
+.payment-box strong {
+  color: #00ccff;
+}
+.invoice-instructions { background:#222f3e; border:2px solid #00aaff; border-radius:10px; padding:10px; margin:6px 0; color:#fff; }
+.invoice-note { font-size:0.9rem; margin-top:6px; color:#ccc; }
+</style>
+</head>
+<body>
+<header>
+  <div class="nav">
+    <div class="brand">
+      <img src="/public/veltrix-logo.png" alt="Veltrix Logo"/>
+      <span>VELTRIX</span>
+    </div>
+    <div class="navlinks">
+      <a href="#store">Store</a>
+      <a href="#orders" id="ordersLink" class="hidden">My Invoices</a>
+      <a href="#account">Account</a>
+      <a href="admin.html" id="adminLink" class="hidden">Admin</a>
+      <a href="#about">About</a>
+      <a href="#tos">Terms</a>
+      <a href="https://discord.gg/w5SeKfRP28" target="_blank"><i class="fa-brands fa-discord"></i> Discord</a>
+      <img id="navAvatar" class="avatar-mini hidden" src="/public/uploads/default.jpg" alt="pfp"/>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Auth -->
+  <section id="authSection" class="card">
+    <h2 class="section-title"><i class="fa-solid fa-user"></i> Sign in / Register</h2>
+    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr))">
+      <div class="card">
+        <h3>Create account</h3>
+        <div class="row">
+          <input id="regUsername" placeholder="Username">
+          <input id="regEmail" placeholder="Email">
+          <input id="regPassword" type="password" placeholder="Password">
+          <button class="btn primary" onclick="register()">Register</button>
+        </div>
+        <p class="muted">A default profile image is set. You can change it later, you must create an account to view the store.</p>
+      </div>
+      <div class="card">
+        <h3>Login</h3>
+        <div class="row">
+          <input id="loginEmail" placeholder="Email">
+          <input id="loginPassword" type="password" placeholder="Password">
+          <button class="btn ok" onclick="login()">Login</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Store -->
+  <section id="store" class="hidden">
+    <h2 class="section-title"><i class="fa-solid fa-store"></i> Store</h2>
+    <div id="storeList" class="grid grid-3"></div>
+    <div class="card">
+      <h3><i class="fa-solid fa-cart-shopping"></i> Cart</h3>
+      <div id="cart" class="grid"></div>
+      <div class="row" style="justify-content:space-between;align-items:center">
+        <div><strong>Total:</strong> $<span id="cartTotal">0.00</span></div>
+        <button class="btn primary" onclick="checkout()">Checkout</button>
+      </div>
+      <div class="notice" style="margin-top:10px">
+        <strong>Important:</strong> When you checkout an <em>invoice</em> is created with status <span class="pill">pending</span>.
+        Follow the instructions shown. An admin must confirm your payment—only then your credentials will appear in <b>My Invoices</b>.
+      </div>
+    </div>
+  </section>
+
+  <!-- Orders -->
+  <section id="orders" class="hidden">
+    <h2 class="section-title"><i class="fa-solid fa-file-invoice-dollar"></i> My Invoices</h2>
+    <div id="ordersList" class="grid"></div>
+  </section>
+
+  <!-- Account -->
+  <section id="account" class="hidden">
+    <h2 class="section-title"><i class="fa-solid fa-user-gear"></i> My Account</h2>
+    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr))">
+      <div class="card">
+        <div class="row" style="align-items:center">
+          <img id="pfp" class="avatar" src="/public/uploads/default.jpg">
+          <div>
+            <div><strong id="accName">-</strong></div>
+            <div class="muted" id="accEmail">-</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Change profile picture</h3>
+        <form id="avatarForm">
+          <input id="avatarFile" type="file" accept="image/*" />
+          <button class="btn" type="submit"><i class="fa-solid fa-upload"></i> Upload</button>
+        </form>
+      </div>
+      <div class="card">
+        <h3>Session</h3>
+        <button class="btn" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section id="about">
+    <h2 class="section-title"><i class="fa-solid fa-circle-info"></i> About Me</h2>
+    <div class="card">
+      <p> at <strong> Veltrix </strong>we strive for protection, customer satisfaction and the best support with the cheapest accounts!</p>
+    </div>
+  </section>
+
+  <!-- TOS -->
+  <section id="tos">
+    <h2 class="section-title"><i class="fa-solid fa-scale-balanced"></i> Terms of Service</h2>
+    <div class="card">
+      <ul>
+        <li>All sales are final unless otherwise stated. Replacements are handled case-by-case.</li>
+        <li>Credentials are delivered <b>only after</b> admin confirmation of payment.</li>
+        <li>Chargebacks/fraud will result in dwc and dwc in servers mutual and probably a ban. dont do it!</li>
+        <li>We are not affiliated with any game publishers.</li> 
+        <li>We reserve the right to modify these terms at any time without prior notice.</li>
+        <li>Users are responsible for maintaining the confidentiality of their account information.</li>
+        <li>By using our service, you agree to comply with all applicable laws and regulations.</li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="footer-grid">
+    <div><strong>VELTRIX</strong><p class="muted">Premium accounts marketplace.</p></div>
+    <div><strong>Links</strong><p><a href="#store">Store</a> · <a href="#orders">Orders</a> · <a href="#about">About</a> · <a href="#tos">Terms</a></p></div>
+    <div><strong>Community</strong><p><a href="https://discord.gg/w5SeKfRP28" target="_blank"><i class="fa-brands fa-discord"></i> Discord</a></p></div>
+    <div><strong>Developer</strong><p class="muted">made with love by @buyingsellingebayalt</p></div>
+  </div>
+  <div class="copyright">© 2025 Veltrix</div>
+</footer>
+
+<script>
+let cart = [];
+function fmt(n){return (Math.round(n*100)/100).toFixed(2)}
+
+// ===== Auth =====
+async function register(){
+  const username=document.getElementById('regUsername').value.trim();
+  const email=document.getElementById('regEmail').value.trim();
+  const password=document.getElementById('regPassword').value.trim();
+  if(!username||!email||!password){alert("All fields required");return;}
+  const r=await fetch('/api/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,email,password})});
+  const d=await r.json(); if(d.error){alert(d.error)} else {alert("Registered. You can login now.");}
+}
+
+async function login(){
+  const email=document.getElementById('loginEmail').value.trim();
+  const password=document.getElementById('loginPassword').value.trim();
+  const r=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'include',body:JSON.stringify({email,password})});
+  const d=await r.json(); if(d.error){alert(d.error);return;}
+  document.getElementById('authSection').classList.add('hidden');
+  document.getElementById('store').classList.remove('hidden');
+  document.getElementById('account').classList.remove('hidden');
+  document.getElementById('orders').classList.remove('hidden');
+  document.getElementById('ordersLink').classList.remove('hidden');
+  if(d.isAdmin){ document.getElementById('adminLink').classList.remove('hidden'); }
+  document.getElementById('accName').textContent=d.username;
+  document.getElementById('accEmail').textContent=d.email;
+  const psrc='/public/uploads/'+(d.profile_pic||'default.jpg');
+  document.getElementById('pfp').src=psrc; document.getElementById('navAvatar').src=psrc; document.getElementById('navAvatar').classList.remove('hidden');
+  loadStore(); loadOrders();
+}
+
+async function logout(){
+  await fetch('/api/logout',{method:'POST',credentials:'include'});
+  location.reload();
+}
+
+// Avatar upload
+document.getElementById('avatarForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const f=document.getElementById('avatarFile').files[0]; if(!f){return;}
+  const fd=new FormData(); fd.append('profilePic',f);
+  const r=await fetch('/api/profile/avatar',{method:'POST',credentials:'include',body:fd});
+  const d=await r.json(); if(d.error){alert(d.error);return;}
+  const p='/public/uploads/'+d.file;
+  document.getElementById('pfp').src=p; document.getElementById('navAvatar').src=p;
+});
+
+// ===== Store & Cart =====
+async function loadStore(){
+  const r=await fetch('/api/accounts',{credentials:'include'});
+  const list=await r.json();
+  const el=document.getElementById('storeList'); el.innerHTML='';
+  list.forEach(a=>{
+    const div=document.createElement('div'); div.className='card';
+    div.innerHTML=`<h3>${a.title}</h3>
+          <p class="muted">${a.description||''}</p>
+          
+          <div class="row" style="justify-content:space-between;align-items:center">
+            <span class="price">$${fmt(a.price)}</span>
+            <span class="pill">${a.stock} in stock</span>
+          </div>
+          <button class="btn primary" ${a.stock<=0?'disabled':''} onclick="addToCart(${a.id}, \`${a.title.replace(/`/g,"\\`")}\`, ${a.price})"><i class="fa-solid fa-cart-plus"></i> Add</button>`;
+    el.appendChild(div);
+  });
+}
+
+function addToCart(id,title,price){
+  const f=cart.find(i=>i.id===id); if(f){f.qty+=1}else{cart.push({id,title,price,qty:1})}
+  renderCart();
+}
+function removeFromCart(id){ cart=cart.filter(i=>i.id!==id); renderCart(); }
+function renderCart(){
+  const el=document.getElementById('cart'); el.innerHTML=''; let total=0;
+  cart.forEach(i=>{ total+=i.price*i.qty;
+    const c=document.createElement('div'); c.className='card';
+    c.innerHTML=`<div class="row" style="justify-content:space-between;align-items:center">
+      <div><strong>${i.title}</strong> — $${fmt(i.price)} × ${i.qty}</div>
+      <button class="btn" onclick="removeFromCart(${i.id})"><i class="fa-solid fa-trash"></i> Remove</button></div>`;
+    el.appendChild(c);
+  });
+  document.getElementById('cartTotal').textContent=fmt(total);
+}
+
+async function checkout(){
+  if(cart.length===0){alert("Cart empty");return;}
+  const r=await fetch('/api/checkout',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'include',body:JSON.stringify({items:cart.map(c=>({account_id:c.id,qty:c.qty}))})});
+  const d=await r.json(); if(d.error){alert(d.error);return;}
+  cart=[]; renderCart();
+  alert("Invoice created. Follow the instructions shown in My Invoices.");
+  loadOrders();
+}
+
+// ===== Orders =====
+async function loadOrders(){
+  const r=await fetch('/api/my-invoices',{credentials:'include'});
+  const list=await r.json(); const el=document.getElementById('ordersList'); el.innerHTML='';
+  list.forEach(inv=>{
+    const div=document.createElement('div'); div.className='card';
+    const items = inv.items.map(it => `
+  <div>
+    ${it.title_snapshot || it.title || ('Account #'+it.account_id)} × ${it.qty} — $${fmt(it.unit_price)}
+    ${it.instructions ? `
+      <div class="notice" style="margin-top:5px;color:#ccc;">
+        <strong>Follow these payment instructions:</strong><br>
+        ${it.instructions}
+      </div>
+    ` : ""}
+  </div>
+`).join('');
+
+    div.innerHTML = `
+      <div>
+        <div class="row" style="justify-content:space-between;align-items:center"><strong>Invoice #${inv.id}</strong><span class="pill">${inv.status}</span></div>
+        <div class="muted" style="margin:6px 0">${new Date(inv.created_at).toLocaleString()}</div>
+        <div>${items}</div>
+        <div style="margin-top:8px"><strong>Total:</strong> $${fmt(inv.total)}</div>
+        ${
+          inv.delivery_text
+            ? `<h4>Credentials & Instructions</h4><div class="orders-cred">${inv.delivery_text}</div>`
+            : `<div>${inv.items.map(it=> it.instructions? `<div class='notice'><strong>${it.title}</strong><br>Instructions: ${it.instructions}</div>`:'').join('')}</div>
+              <div class="notice" style="margin-top:8px">Please wait for admin confirmation. Pay according to the above instructions, then wait for approval.</div>`
+        }
+      </div>
+    `;
+    el.appendChild(div);
+  });
+}
+</script>
+</body>
+</html>

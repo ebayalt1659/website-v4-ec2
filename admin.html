@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Veltrix Admin Panel</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body{font-family:sans-serif;margin:0;background:#0d1420;color:#e6f1ff}
+    header{background:#111b26;padding:14px;font-size:22px;font-weight:700;border-bottom:1px solid rgba(255,255,255,.08)}
+    main{padding:20px;max-width:1100px;margin:0 auto}
+    h2{margin-top:30px;margin-bottom:10px}
+    table{width:100%;border-collapse:collapse;margin-top:10px;background:#111b26;border-radius:10px;overflow:hidden}
+    th,td{padding:10px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left}
+    th{background:#152233}
+    tr:hover{background:#1a2533}
+    .btn{padding:6px 12px;border:none;border-radius:6px;cursor:pointer}
+    .btn.primary{background:#ff4655;color:#fff}
+    .btn.ok{background:#16a34a;color:#fff}
+    .btn.danger{background:#dc2626;color:#fff}
+    .btn.small{font-size:0.85rem;padding:4px 8px}
+    input,textarea{width:100%;margin:4px 0;padding:8px;border-radius:6px;border:1px solid rgba(255,255,255,.1);background:#0d1420;color:#fff}
+    textarea{resize:vertical;min-height:60px}
+    .grid{display:grid;gap:10px}
+    .card{background:#111b26;padding:14px;border-radius:10px;margin-top:10px}
+    img.avatar-mini{width:28px;height:28px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:6px}
+    .modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center}
+    .modal-content{background:#111b26;padding:20px;border-radius:10px;max-width:600px;width:100%;max-height:90vh;overflow:auto}
+    .modal h3{margin-top:0}
+    .cred-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.08)}
+    .cred-row.sold{color:#888}
+  </style>
+</head>
+<body>
+<header>Veltrix Admin Panel</header>
+<main>
+
+  <!-- ACCOUNTS -->
+  <h2>Accounts</h2>
+  <div class="card">
+    <h3>Add New Account</h3>
+    <div class="grid">
+      <input id="accTitle" placeholder="Title">
+      <textarea id="accDesc" placeholder="Description"></textarea>
+      <input id="accPrice" type="number" step="0.01" placeholder="Price">
+      <textarea id="accInstr" placeholder="Payment Instructions"></textarea>
+      <textarea id="accCreds" placeholder="Credentials (one per line)"></textarea>
+      <button class="btn primary" onclick="addAccount()">Add Account</button>
+    </div>
+  </div>
+  <table>
+    <thead>
+      <tr><th>ID</th><th>Title</th><th>Price</th><th>Stock</th><th>Actions</th></tr>
+    </thead>
+    <tbody id="accountsTable"></tbody>
+  </table>
+
+  <!-- INVOICES -->
+  <h2>Invoices</h2>
+  <table>
+    <thead>
+      <tr><th>ID</th><th>User</th><th>Status</th><th>Items</th><th>Total</th><th>Actions</th></tr>
+    </thead>
+    <tbody id="invoicesTable"></tbody>
+  </table>
+
+  <!-- USERS -->
+  <h2>Users</h2>
+  <table>
+    <thead>
+      <tr><th>ID</th><th>Username</th><th>Email</th><th>Admin</th><th>Actions</th></tr>
+    </thead>
+    <tbody id="usersTable"></tbody>
+  </table>
+
+</main>
+
+<!-- Edit Modal -->
+<div id="editModal" class="modal" style="display:none">
+  <div class="modal-content">
+    <h3>Edit Account</h3>
+    <input id="editTitle" placeholder="Title">
+    <textarea id="editDesc" placeholder="Description"></textarea>
+    <input id="editPrice" type="number" step="0.01" placeholder="Price">
+    <textarea id="editInstr" placeholder="Payment Instructions"></textarea>
+    <textarea id="editCreds" placeholder="Add new credentials (one per line)"></textarea>
+    <h4>Existing Credentials</h4>
+    <div id="credList"></div>
+    <div style="margin-top:10px;display:flex;gap:10px;justify-content:flex-end">
+      <button class="btn ok" onclick="saveEdit()">Save</button>
+      <button class="btn danger" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function fmt(n){return (Math.round(n*100)/100).toFixed(2)}
+
+// ===== ACCOUNTS =====
+async function addAccount(){
+  const title=document.getElementById('accTitle').value.trim();
+  const description=document.getElementById('accDesc').value.trim();
+  const price=parseFloat(document.getElementById('accPrice').value);
+  const instructions=document.getElementById('accInstr').value.trim();
+  const creds=document.getElementById('accCreds').value.trim();
+  if(!title||!price||!instructions){alert("Title, price and instructions required.");return;}
+
+  const r=await fetch('/api/admin/accounts',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'include',body:JSON.stringify({title,description,price,instructions})});
+  const d=await r.json(); if(d.error){alert(d.error);return;}
+
+  if(creds){
+    await fetch(`/api/admin/accounts/${d.id}/credentials`,{method:'POST',headers:{'Content-Type':'application/json'},credentials:'include',body:JSON.stringify({bulk:creds})});
+  }
+
+  alert("Account added successfully");
+  document.getElementById('accTitle').value='';
+  document.getElementById('accDesc').value='';
+  document.getElementById('accPrice').value='';
+  document.getElementById('accInstr').value='';
+  document.getElementById('accCreds').value='';
+  loadAccounts();
+}
+
+async function loadAccounts(){
+  const r=await fetch('/api/accounts',{credentials:'include'}); const list=await r.json();
+  const tbody=document.getElementById('accountsTable'); tbody.innerHTML='';
+  list.forEach(a=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${a.id}</td><td>${a.title}</td><td>$${fmt(a.price)}</td><td>${a.stock}</td>
+      <td>
+        <button class="btn small" onclick="openEdit(${a.id})">Edit</button>
+        <button class="btn danger small" onclick="deleteAccount(${a.id})">Delete</button>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+async function deleteAccount(id){
+  if(!confirm("Delete account "+id+"?")) return;
+  await fetch('/api/admin/accounts/'+id,{method:'DELETE',credentials:'include'});
+  loadAccounts();
+}
+
+// ===== EDIT MODAL =====
+let editId=null;
+async function openEdit(id){
+  editId=id;
+  const r=await fetch('/api/accounts',{credentials:'include'}); 
+  const list=await r.json();
+  const acc=list.find(a=>a.id===id);
+  if(!acc){alert("Account not found");return;}
+  document.getElementById('editTitle').value=acc.title;
+  document.getElementById('editDesc').value=acc.description||'';
+  document.getElementById('editPrice').value=acc.price;
+  document.getElementById('editInstr').value=acc.instructions||'';
+  document.getElementById('editCreds').value='';
+
+  // Load credentials
+  const cr=await fetch(`/api/admin/accounts/${id}/credentials`,{credentials:'include'});
+  const creds=await cr.json();
+  const listDiv=document.getElementById('credList'); listDiv.innerHTML='';
+  creds.forEach(c=>{
+    const row=document.createElement('div');
+    row.className='cred-row'+(c.sold?' sold':'');
+    row.innerHTML=`<span>${c.secret}</span> ${c.sold?'(sold)':'<button class="btn danger small" onclick="deleteCred('+c.id+')">Delete</button>'}`;
+    listDiv.appendChild(row);
+  });
+
+  document.getElementById('editModal').style.display='flex';
+}
+function closeModal(){document.getElementById('editModal').style.display='none';}
+async function saveEdit(){
+  const title=document.getElementById('editTitle').value.trim();
+  const description=document.getElementById('editDesc').value.trim();
+  const price=parseFloat(document.getElementById('editPrice').value);
+  const instructions=document.getElementById('editInstr').value.trim();
+  const creds=document.getElementById('editCreds').value.trim();
+  if(!title||!price||!instructions){alert("All fields required");return;}
+  await fetch('/api/admin/accounts/'+editId,{method:'PUT',headers:{'Content-Type':'application/json'},credentials:'include',body:JSON.stringify({title,description,price,instructions})});
+  if(creds){
+    await fetch(`/api/admin/accounts/${editId}/credentials`,{method:'POST',headers:{'Content-Type':'application/json'},credentials:'include',body:JSON.stringify({bulk:creds})});
+  }
+  closeModal();
+  loadAccounts();
+}
+async function deleteCred(id){
+  if(!confirm("Delete this credential?")) return;
+  await fetch(`/api/admin/credentials/${id}`,{method:'DELETE',credentials:'include'});
+  openEdit(editId); // reload creds
+}
+
+// ===== INVOICES =====
+async function loadInvoices(){
+  const r=await fetch('/api/admin/invoices',{credentials:'include'}); const list=await r.json();
+  const tbody=document.getElementById('invoicesTable'); tbody.innerHTML='';
+  list.forEach(inv=>{
+    const tr=document.createElement('tr');
+    const items=inv.items.map(it=>`${it.title} × ${it.qty}`).join(', ');
+    tr.innerHTML=`<td>${inv.id}</td><td>${inv.user_email}</td><td>${inv.status}</td><td>${items}</td><td>$${fmt(inv.total)}</td>
+      <td>
+        ${inv.status==='pending'
+          ? `<button class="btn ok small" onclick="confirmInvoice(${inv.id})">Confirm</button>
+             <button class="btn danger small" onclick="rejectInvoice(${inv.id})">Reject</button>
+             <button class="btn danger small" onclick="deleteInvoice(${inv.id})">Delete</button>`
+          : `<button class="btn danger small" onclick="deleteInvoice(${inv.id})">Delete</button>`}
+      </td>`;
+    tbody.appendChild(tr);
+  });
+}
+async function confirmInvoice(id){await fetch(`/api/admin/invoices/${id}/confirm`,{method:'POST',credentials:'include'});loadInvoices();}
+async function rejectInvoice(id){await fetch(`/api/admin/invoices/${id}/reject`,{method:'POST',credentials:'include'});loadInvoices();}
+async function deleteInvoice(id){if(!confirm("Delete invoice "+id+"?")) return;await fetch(`/api/admin/invoices/${id}`,{method:'DELETE',credentials:'include'});loadInvoices();}
+
+// ===== USERS =====
+async function loadUsers(){
+  const r=await fetch('/api/admin/users',{credentials:'include'}); const list=await r.json();
+  const tbody=document.getElementById('usersTable'); tbody.innerHTML='';
+  list.forEach(u=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${u.id}</td>
+      <td><img src="/public/uploads/${u.profile_pic}" class="avatar-mini">${u.username}</td>
+      <td>${u.email}</td>
+      <td>${u.is_admin?'Yes':'No'}</td>
+      <td>
+        ${u.is_admin
+          ? `<button class="btn small" onclick="demoteUser(${u.id})">Demote</button>`
+          : `<button class="btn ok small" onclick="promoteUser(${u.id})">Make Admin</button>`}
+      </td>`;
+    tbody.appendChild(tr);
+  });
+}
+async function promoteUser(id){await fetch(`/api/admin/users/${id}/promote`,{method:'POST',credentials:'include'});loadUsers();}
+async function demoteUser(id){await fetch(`/api/admin/users/${id}/demote`,{method:'POST',credentials:'include'});loadUsers();}
+
+// ===== INIT =====
+loadAccounts();loadInvoices();loadUsers();
+</script>
+</body>
+</html>
